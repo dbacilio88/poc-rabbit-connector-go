@@ -1,2 +1,2 @@
-# poc-rabbit-subscribe-go
-poc-rabbit-subscribe-go
+# poc-rabbit-subscriber-go
+poc-rabbit-subscriber-go
