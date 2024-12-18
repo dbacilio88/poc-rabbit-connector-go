@@ -1,0 +1,30 @@
+rabbitmq:
+    exchange:
+        durable: true
+        name: exchange.go.tutorials
+        type: topic
+    host: chimpanzee.rmq.cloudamqp.com
+    password: F6-m21vrQokbdCys_upLFsH2X2kfxl2J
+    port: 5671
+    protocol: amqps
+    queue:
+        durable: true
+        message_ttl: 60000
+        name: QU-APP-GRPC-EMAIL-MICROSERVICE
+        type: quorum
+    routing_key:
+        request: service.app.go.transaction.request
+        response: service.*.go.tutorials.transaction.response
+    tls_enable: true
+    user: kjsycjee
+    vhost: kjsycjee
+scheduler:
+    enable: true
+server:
+    environment: prod
+    host: localhost
+    logging: debug
+    logs: /home/christian/workspace/go/src/logs
+    name: go
+    port: 3000
+    timeout: 30
