@@ -54,6 +54,13 @@ import (
 */
 var URI = "amqp://guest:guest@localhost:5672/"
 
+const QU = "QU-CONNECTOR-CONSUMER-TRANSACTION-REQUEST"
+const RK = "SERVICE.MD-CORE.CONNECTOR.TRANSACTION.REQUEST"
+
+const RKP = "SERVICE.CONNECTOR.MD-CORE.TRANSACTION.RESPONSE"
+const EX = "topic.exchange.transaction"
+const MESSAGE = "HELLO WORLD FROM THE CONNECTOR"
+
 func main() {
 
 	amqpConfig := amqp.Config{
@@ -61,13 +68,11 @@ func main() {
 			AmqpURI:   URI,
 			Reconnect: amqp.DefaultReconnectConfig(),
 		},
-
 		Marshaler: amqp.DefaultMarshaler{},
-
 		Exchange: amqp.ExchangeConfig{
 			GenerateName: func(topic string) string {
 				fmt.Println("topic exchange ", topic)
-				return "exchange.rabbit.topic"
+				return EX
 			},
 			Type: "topic",
 			//Durable:     true,
@@ -78,14 +83,14 @@ func main() {
 			//GenerateName: amqp.GenerateQueueNameTopicName,
 			GenerateName: func(topic string) string {
 				fmt.Println("topic queue ", topic)
-				return "queue.rabbit.topic"
+				return QU
 			},
 			Durable: true,
 		},
 		QueueBind: amqp.QueueBindConfig{
 			GenerateRoutingKey: func(topic string) string {
 				fmt.Println("topic binding ", topic)
-				return "routing.key.topic"
+				return RK
 			},
 		},
 		Publish: amqp.PublishConfig{
@@ -119,7 +124,7 @@ func main() {
 	}
 
 	log.Println("subscribing to messages")
-	messages, err := subscriber.Subscribe(context.Background(), "queue.rabbit.topic")
+	messages, err := subscriber.Subscribe(context.Background(), QU)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -136,9 +141,9 @@ func main() {
 
 func publishMessages(publisher message.Publisher) {
 	for {
-		msg := message.NewMessage(watermill.NewUUID(), []byte("Hello, world!"))
+		msg := message.NewMessage(watermill.NewUUID(), []byte(MESSAGE))
 
-		if err := publisher.Publish("routing.key.topic", msg); err != nil {
+		if err := publisher.Publish(RKP, msg); err != nil {
 			log.Fatal(err)
 		}
 		log.Println("Published message to topic", watermill.NewUUID())
